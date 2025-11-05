@@ -16,9 +16,15 @@
         "pretty": true,
         "noFallthroughCasesInSwitch": true,
         "allowUnreachableCode": false,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
         "types": ["jasmine"]
     },
     "include": [
-        "src/"
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
     ]
 }

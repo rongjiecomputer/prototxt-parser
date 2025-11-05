@@ -47,15 +47,8 @@ gulp.task('tinyify', () => {
     .pipe(gulp.dest(config.dst + '/browser'));
 });
 
-// Compile the project for Node and Typescript
-gulp.task('tsc', () => {
-  return gulp.src([config.src + '/**/*.ts'])
-    .pipe(tsProject())
-    .pipe(gulp.dest(config.dst + '/node'));
-});
-
-// Build step: build JS, tiny JS and TS declaration in parallel
-gulp.task('build', gulp.series('clean', gulp.parallel('browserify', 'tinyify', 'tsc')));
+// Build step: build JS and tiny JS for browser (Node build is done via tsc)
+gulp.task('build:browser', gulp.parallel('browserify', 'tinyify'));
 
 // default task
 gulp.task('default', gulp.series('browserify'));
