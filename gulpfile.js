@@ -1,9 +1,9 @@
 const browserify = require('browserify');
 const gulp = require('gulp');
 const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
 const rename = require('gulp-rename');
 const ts = require('gulp-typescript');
-const runSequence = require('run-sequence');
 const del = require('del');
 const p = require('./package.json');
 
@@ -20,7 +20,9 @@ function getBrowserify(tinyify) {
   const b = browserify({
     entries: config.src + '/index.ts',
     standalone: config.pkgname
-  }).plugin('tsify');
+  }).plugin('tsify', {
+    project: 'tsconfig.browser.json'
+  });
 
   return tinyify === true ? b.plugin('tinyify').bundle() : b.bundle();
 }
@@ -32,6 +34,7 @@ gulp.task('clean', () => del([config.dst]));
 gulp.task('browserify', () => {
   return getBrowserify()
     .pipe(source(config.filename))
+    .pipe(buffer())
     .pipe(gulp.dest(config.dst + '/browser'));
 });
 
@@ -39,6 +42,7 @@ gulp.task('browserify', () => {
 gulp.task('tinyify', () => {
   return getBrowserify(true)
     .pipe(source(config.filename))
+    .pipe(buffer())
     .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest(config.dst + '/browser'));
 });
@@ -51,9 +55,7 @@ gulp.task('tsc', () => {
 });
 
 // Build step: build JS, tiny JS and TS declaration in parallel
-gulp.task('build', (cb) => {
-  return runSequence('clean', ['browserify', 'tinyify', 'tsc'], cb);
-});
+gulp.task('build', gulp.series('clean', gulp.parallel('browserify', 'tinyify', 'tsc')));
 
 // default task
-gulp.task('default', ['browserify']);
+gulp.task('default', gulp.series('browserify'));
