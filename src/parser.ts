@@ -81,21 +81,18 @@ const Prototxt = P.createLanguage({
   pair: (r) => P.seq(r.identifier.skip(r.colon), r.value),
 
   message: (r) =>
-    P.alt(
-      P.seq(
-        r.identifier,
+    P.seq(
+      r.identifier,
+      P.alt(
         r.colon.times(0, 1)
           .then(r.lbrace)
           .then(r.exp)
-          .skip(r.rbrace)
-      ),
-      P.seq(
-        r.identifier,
+          .skip(r.rbrace),
         r.colon.times(0, 1)
           .then(r.langle)
           .then(r.exp)
           .skip(r.rangle)
-      ),
+      )
     ),
 
   exp: (r) =>
