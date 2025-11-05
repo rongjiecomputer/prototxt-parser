@@ -137,4 +137,51 @@ describe('prototxtParser::parse', () => {
 
     expect(actual).toEqual(expected);
   });
+
+  it('parses different message formats', () => {
+    const input = `
+    message1 {
+      name: "data"
+      inner_data <
+        field1: 1
+        another_message: {
+          field2: 3.14
+        }
+      >
+    }
+    message2 <
+      name: "description"
+    >
+    `;
+
+    const actual = prototxtParser.parse(input);
+    const expected = {
+      message1: {
+        name: "data",
+        inner_data: {
+          field1: 1,
+          another_message: {
+            field2: 3.14
+          }
+        }
+      },
+      message2: {
+        name: "description"
+      }
+    };
+
+    expect(actual).toEqual(expected);
+  });
+
+  it('bracket style must close properly', () => {
+    const inputs = [
+        `message1 < name: "data" }`,
+        `message1 { name: "data" >`,
+        `message1 < message2 { name: "data" > }`,
+    ];
+
+    inputs.forEach(input => {
+      expect(() => prototxtParser.parse(input)).toThrow();
+    });
+  });
 });

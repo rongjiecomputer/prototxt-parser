@@ -57,6 +57,9 @@ const Prototxt = P.createLanguage({
   rbrace: () => word("}"),
   colon: () => word(":"),
 
+  langle: () => word("<"),
+  rangle: () => word(">"),
+
   null: () => word("null").result(null),
   true: () => word("true").result(true),
   false: () => word("false").result(false),
@@ -78,12 +81,21 @@ const Prototxt = P.createLanguage({
   pair: (r) => P.seq(r.identifier.skip(r.colon), r.value),
 
   message: (r) =>
-    P.seq(
-      r.identifier,
-      r.colon.times(0, 1)
-        .then(r.lbrace)
-        .then(r.exp)
-        .skip(r.rbrace)
+    P.alt(
+      P.seq(
+        r.identifier,
+        r.colon.times(0, 1)
+          .then(r.lbrace)
+          .then(r.exp)
+          .skip(r.rbrace)
+      ),
+      P.seq(
+        r.identifier,
+        r.colon.times(0, 1)
+          .then(r.langle)
+          .then(r.exp)
+          .skip(r.rangle)
+      ),
     ),
 
   exp: (r) =>
