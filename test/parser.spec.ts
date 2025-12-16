@@ -184,4 +184,30 @@ describe('prototxtParser::parse', () => {
       expect(() => prototxtParser.parse(input)).toThrow();
     });
   });
+
+  it('parses long number', () => {
+    const input = `
+    message1 {
+      name: "data"
+      small_number: 123
+      negative_number: -999
+      long_number: 12345678901234567890
+      long_float: 12345678901234567890.12345678901234567890
+      long_negative_float: -12345678901234567890.12345678901234567890
+    }`;
+
+    const actual = prototxtParser.parse(input);
+    const expected = {
+      message1: {
+        name: "data",
+        small_number: 123,
+        negative_number: -999,
+        long_number: "12345678901234567890",
+        long_float: "12345678901234567890.12345678901234567890",
+        long_negative_float: "-12345678901234567890.12345678901234567890"
+      }
+    };
+
+    expect(actual).toEqual(expected);
+  })
 });

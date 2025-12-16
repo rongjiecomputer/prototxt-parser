@@ -39,6 +39,14 @@ const interpretEscapes = (str: string) => {
   });
 }
 
+const handleNumber = (s: string) => {
+  const x = Number(s);
+  if (x > Number.MAX_SAFE_INTEGER || x < Number.MIN_SAFE_INTEGER) {
+    return s;
+  }
+  return x;
+}
+
 const whitespace = P.regexp(/\s*/m);
 const token = (parser: P.Parser<any>) => parser.skip(whitespace);
 const word = (str: any) => P.string(str).thru(token);
@@ -75,7 +83,7 @@ const Prototxt = P.createLanguage({
 
   number: () =>
     token(P.regexp(/-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?/))
-      .map(Number)
+      .map(handleNumber)
       .desc("number"),
 
   pair: (r) => P.seq(r.identifier.skip(r.colon), r.value),
